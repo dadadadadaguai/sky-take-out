@@ -34,6 +34,8 @@ public class EmployeeController {
     @Autowired
     private JwtProperties jwtProperties;
 
+
+
     /**
      * 登录
      *
@@ -114,7 +116,7 @@ public class EmployeeController {
     @ApiOperation("禁用or启动员工")
     public Result startOrForbid(@PathVariable Integer status,Long id){
         log.info("更新员工属性,status:{},id:{}",status,id);
-        employeeService.update(status,id);
+        employeeService.beginOrForbid(status,id);
         return  Result.success();
     }
 
@@ -125,9 +127,16 @@ public class EmployeeController {
      */
     @GetMapping("/{id}")
     @ApiOperation("根据ID查询员工")
-    public  Result selectEmployee(@PathVariable Long id){
+    public  Result<Employee> selectEmployee(@PathVariable Long id){
         log.info("查询员工数据,id={}",id);
-        Employee employee=employeeService.selectByID(id);
+        Employee employee=employeeService.selectById(id);
         return Result.success(employee);
+    }
+    @PutMapping
+    @ApiOperation("更新员工")
+    public Result updateEmployee(@RequestBody EmployeeDTO employeeDTO){
+        log.info("更新员工数据,employee={}",employeeDTO);
+        employeeService.updateEmployee(employeeDTO);
+        return Result.success();
     }
 }

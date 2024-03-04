@@ -16,6 +16,7 @@ import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,13 @@ import org.springframework.util.DigestUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private EmployeeMapper employeeMapper;
+
 
     /**
      * 员工登录
@@ -111,7 +114,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param id
      */
     @Override
-    public void update(Integer status, Long id) {
+    public void beginOrForbid(Integer status, Long id) {
         Employee employee
                 = Employee.builder()
                 .status(status)
@@ -120,9 +123,28 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeMapper.update(employee);
     }
 
+    /**
+     * 根据ID查询员工数据
+     * @param id
+     * @return
+     */
     @Override
-    public Employee selectByID(Long id) {
+    public Employee selectById(Long id) {
         Employee employee=employeeMapper.select(id);
+        employee.setPassword("****");
         return employee;
+    }
+
+    /**
+     * 更新员工
+     * @param employeeDTO
+     */
+    @Override
+    public void updateEmployee(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO,employee);
+        employee.setUpdateTime(LocalDateTime.now());
+        employee.setUpdateUser(BaseContext.getCurrentId());
+        employeeMapper.update(employee);
     }
 }
