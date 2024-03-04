@@ -117,4 +117,17 @@ public class EmployeeController {
         employeeService.update(status,id);
         return  Result.success();
     }
+
+    /**
+     * 根据ID查询员工数据
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    @ApiOperation("根据ID查询员工")
+    public  Result selectEmployee(@PathVariable Long id){
+        log.info("查询员工数据,id={}",id);
+        Employee employee=employeeService.selectByID(id);
+        return Result.success(employee);
+    }
 }

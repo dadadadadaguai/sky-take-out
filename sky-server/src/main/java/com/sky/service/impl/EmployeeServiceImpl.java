@@ -119,4 +119,10 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .build();
         employeeMapper.update(employee);
     }
+
+    @Override
+    public Employee selectByID(Long id) {
+        Employee employee=employeeMapper.select(id);
+        return employee;
+    }
 }
