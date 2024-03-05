@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.EmployeeMapper">
     <update id="update">
-        update  employee
+        update employee
         <set>
             <if test="username!=null">username=#{username},</if>
             <if test="name!=null">name=#{name},</if>
@@ -15,7 +15,7 @@
             <if test="password!=null">password=#{password},</if>
             <if test="status!=null">status=#{status},</if>
         </set>
-            where id  = #{id}
+        where id = #{id}
     </update>
     <select id="EmployeePageQuery" resultType="com.sky.entity.Employee">
         select * from employee
@@ -27,6 +27,8 @@
         order by create_time desc
     </select>
     <select id="select" resultType="com.sky.entity.Employee">
-        select * from employee where id=#{id}
+        select *
+        from employee
+        where id = #{id}
     </select>
 </mapper>
