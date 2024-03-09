@@ -1,5 +1,6 @@
 package com.sky.controller.admin;
 
+import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
@@ -9,9 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 菜品处理
@@ -35,5 +34,12 @@ public class DishController {
         log.info("菜品分页查询:{}",dishPageQueryDTO);
         PageResult result =dishService.PageQuery(dishPageQueryDTO);
         return Result.success(result);
+    }
+
+    @PostMapping
+    @ApiOperation("新增菜品")
+    public Result insertDish(@RequestBody DishDTO dishDTO){
+        dishService.insertDish(dishDTO);
+        return Result.success();
     }
 }

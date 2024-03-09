@@ -18,7 +18,9 @@
     </update>
 
     <delete id="delete">
-        delete from category where id=#{id}
+        delete
+        from category
+        where id = #{id}
     </delete>
 
     <select id="pageQuery" resultType="com.sky.entity.Category">
@@ -31,6 +33,15 @@
                 and type=#{type}
             </if>
         </where>
+        order by sort asc,create_time desc
+    </select>
+
+    <select id="list" resultType="com.sky.entity.Category">
+        select * from category
+        where status=1
+        <if test="type!=null">
+            and type=#{type}
+        </if>
         order by sort asc,create_time desc
     </select>
 </mapper>
