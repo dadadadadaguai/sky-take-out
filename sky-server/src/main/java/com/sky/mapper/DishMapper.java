@@ -6,6 +6,7 @@ import com.sky.constant.AutoFillConstant;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.enumeration.OperationType;
+import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -20,7 +21,7 @@ public interface DishMapper {
      * @param dishPageQueryDTO
      * @return
      */
-    Page<Dish> query(DishPageQueryDTO dishPageQueryDTO);
+    Page<DishVO> query(DishPageQueryDTO dishPageQueryDTO);
 
     /**
      * 添加菜品

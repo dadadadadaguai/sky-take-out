@@ -10,6 +10,7 @@ import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
+import com.sky.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,9 @@ public class DIshServiceImpl implements DishService {
     @Override
     public PageResult PageQuery(DishPageQueryDTO dishPageQueryDTO) {
         PageHelper.startPage(dishPageQueryDTO.getPage(),dishPageQueryDTO.getPageSize());
-        Page<Dish> page=dishMapper.query(dishPageQueryDTO);
+        Page<DishVO> page=dishMapper.query(dishPageQueryDTO);
         long total = page.getTotal();
-        List<Dish> result = page.getResult();
+        List<DishVO> result = page.getResult();
         return new PageResult(total,result);
     }
 

@@ -30,7 +30,7 @@ public class DishController {
      */
     @GetMapping("/page")
     @ApiOperation(value = "菜品分页查询")
-    public Result pageQuery(DishPageQueryDTO dishPageQueryDTO){
+    public Result<PageResult> pageQuery(DishPageQueryDTO dishPageQueryDTO){
         log.info("菜品分页查询:{}",dishPageQueryDTO);
         PageResult result =dishService.PageQuery(dishPageQueryDTO);
         return Result.success(result);
