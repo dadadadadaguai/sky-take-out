@@ -115,9 +115,19 @@ public class DIshServiceImpl implements DishService {
      */
     @Override
     public void updateDish(DishDTO dishDTO) {
-        // TODO 修改菜品
-        dishMapper.updateDish(dishDTO);
-        dishFlavorMapper.update(dishDTO);
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO, dish);
+        dishMapper.updateDish(dish);
+
+        //考虑删除口味再添加口味
+        dishFlavorMapper.deleteByDishId(dishDTO.getId());
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+        if (flavors != null || flavors.size() != 0) {
+            for (DishFlavor flavor : flavors) {
+                flavor.setDishId(dishDTO.getId());
+            }
+            dishFlavorMapper.insertBatch(flavors);
+        }
     }
 
     /**
@@ -130,12 +140,12 @@ public class DIshServiceImpl implements DishService {
     public DishVO selectById(Long id) {
         //1.查询对应ID的菜品的数据
         Dish dish = dishMapper.selectAllById(id);
-        Long dishId=dish.getCategoryId();
-        String categoryName =categoryMapper.selectCategortNameById(dishId);
+        Long dishId = dish.getCategoryId();
+        String categoryName = categoryMapper.selectCategortNameById(dishId);
         //2.查询菜品口味表
         List<DishFlavor> dishFlavorList = dishFlavorMapper.selectAllByDishId(id);
         DishVO dishVO = new DishVO();
-        BeanUtils.copyProperties(dish,dishVO);
+        BeanUtils.copyProperties(dish, dishVO);
         dishVO.setFlavors(dishFlavorList);
         dishVO.setCategoryName(categoryName);
         return dishVO;
@@ -143,7 +153,7 @@ public class DIshServiceImpl implements DishService {
 
     @Override
     public List<Dish> selectByCategoryId(Long categoryId) {
-        List<Dish> dishList=dishMapper.selectAllByCategoryId(categoryId);
+        List<Dish> dishList = dishMapper.selectAllByCategoryId(categoryId);
         return dishList;
     }
 }

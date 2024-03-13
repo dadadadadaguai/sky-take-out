@@ -64,8 +64,9 @@ public interface DishMapper {
     List<Dish> selectAllByCategoryId(Long categoryId);
 
     /**
-     * 更新菜品吧表
-     * @param dishDTO
+     * 更新菜品表
+     * @param dish
      */
-    void updateDish(DishDTO dishDTO);
+    @AutoFill(value = OperationType.UPDATE)
+    void updateDish(Dish dish);
 }

@@ -17,10 +17,7 @@ public interface DishFlavorMapper {
     //根据菜品ID查询口味
     List<DishFlavor> selectAllByDishId(Long dishId);
 
-    /**
-     * 更新口味表
-     * @param dishDTO
-     */
-    // TODO 口味更新
-    void update(DishDTO dishDTO);
+
+
+    void deleteByDishId(Long dishId);
 }

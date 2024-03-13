@@ -92,7 +92,8 @@ public class DishController {
      */
     @PutMapping
     @ApiOperation("修改菜品")
-    public Result update(@RequestParam DishDTO dishDTO) {
+    public Result update(@RequestBody DishDTO dishDTO) {
+        log.info("修改菜品表，请求数据为:{}",dishDTO);
         dishService.updateDish(dishDTO);
         return Result.success();
     }

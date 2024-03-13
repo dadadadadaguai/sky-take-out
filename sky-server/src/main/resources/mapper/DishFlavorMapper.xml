@@ -9,9 +9,9 @@
             (#{df.dishId},#{df.name},#{df.value})
         </foreach>
     </insert>
-    <update id="update">
-
-    </update>
+    <delete id="deleteByDishId">
+            delete from dish_flavor where dish_id=#{dishId}
+    </delete>
 
     <select id="selectAllByDishId" resultType="com.sky.entity.DishFlavor">
         select *
