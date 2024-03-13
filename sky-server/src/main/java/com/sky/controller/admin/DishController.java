@@ -1,5 +1,6 @@
 package com.sky.controller.admin;
 
+import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
@@ -95,6 +96,13 @@ public class DishController {
     public Result update(@RequestBody DishDTO dishDTO) {
         log.info("修改菜品表，请求数据为:{}",dishDTO);
         dishService.updateDish(dishDTO);
+        return Result.success();
+    }
+    @PostMapping("/status/{status}")
+    @ApiOperation("禁用或者启用菜品")
+    public Result openOrForbid(@PathVariable Integer status,Long id){
+        log.info("启用或者禁用菜品：状态码为{},id为{}",status,id);
+        dishService.openOrForbid(status,id);
         return Result.success();
     }
 }

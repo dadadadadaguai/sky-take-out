@@ -23,4 +23,6 @@ public interface DishService {
     DishVO selectById(Long id);
 
     List<Dish> selectByCategoryId(Long categoryId);
+
+    void openOrForbid(Integer status, Long id);
 }
