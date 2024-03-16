@@ -83,7 +83,7 @@ public class DishController {
     public Result<List<Dish>> queryByCategoryId(Long categoryId) {
         log.info("分类查询菜品，菜品id为{}",categoryId);
         List<Dish> dishList = dishService.selectByCategoryId(categoryId);
-        return null;
+        return Result.success(dishList);
     }
 
     /**
