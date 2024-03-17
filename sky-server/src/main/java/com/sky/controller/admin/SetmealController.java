@@ -44,20 +44,35 @@ public class SetmealController {
     @GetMapping("/page")
     @ApiOperation("分页查询")
     public Result<PageResult> pageQuerySetmeal(SetmealPageQueryDTO setmealPageQueryDTO) {
-        log.info("套餐分页查询，setmealPageQueryDTO:{}",setmealPageQueryDTO);
-        PageResult pageResult=setmealService.pageQuery(setmealPageQueryDTO);
+        log.info("套餐分页查询，setmealPageQueryDTO:{}", setmealPageQueryDTO);
+        PageResult pageResult = setmealService.pageQuery(setmealPageQueryDTO);
         return Result.success(pageResult);
     }
 
     /**
      * 根据id查询套餐
+     *
      * @param id
      * @return
      */
     @GetMapping("/{id}")
     @ApiOperation("根据id查询套餐信息")
-    public Result<SetmealVO> querySetmeal(@PathVariable long id){
-        SetmealVO setmealVO=setmealService.querySetmeal(id);
+    public Result<SetmealVO> querySetmeal(@PathVariable long id) {
+        log.info("根据id查询套餐信息，查询套餐的id为{}",id);
+        SetmealVO setmealVO = setmealService.querySetmeal(id);
         return Result.success(setmealVO);
+    }
+
+    /**
+     * 更新套餐信息
+     * @param setmealDTO
+     * @return
+     */
+    @PutMapping
+    @ApiOperation("修改套餐")
+    public Result updateSetmeal(@RequestBody SetmealDTO setmealDTO) {
+        log.info("修改套餐，setmealDTO:{}",setmealDTO);
+        setmealService.updateSetmeal(setmealDTO);
+        return Result.success();
     }
 }

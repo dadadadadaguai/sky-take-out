@@ -33,4 +33,10 @@ public interface SetMealDishMapper {
      * @param setmeald
      */
     List<SetmealDish> getSetMealIdByDishId(long setmeald);
+
+    /**
+     * 删除套餐菜品表
+     * @param setmealId
+     */
+    void deleteSetmealDish(Long setmealId);
 }

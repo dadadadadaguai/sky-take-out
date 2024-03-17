@@ -35,4 +35,10 @@ public interface SetmealMapper {
      * @return
      */
     Setmeal queryAll(long id);
+
+    /**
+     * 更新套餐
+     * @param setmeal
+     */
+    void update(Setmeal setmeal);
 }
