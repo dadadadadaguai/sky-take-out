@@ -28,4 +28,11 @@ public interface SetmealMapper {
      * @return
      */
     Page<SetmealVO> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
+
+    /**
+     * 根据id查询套餐信息
+     * @param id
+     * @return
+     */
+    Setmeal queryAll(long id);
 }

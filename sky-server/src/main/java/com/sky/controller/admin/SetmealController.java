@@ -48,7 +48,14 @@ public class SetmealController {
         PageResult pageResult=setmealService.pageQuery(setmealPageQueryDTO);
         return Result.success(pageResult);
     }
+
+    /**
+     * 根据id查询套餐
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
+    @ApiOperation("根据id查询套餐信息")
     public Result<SetmealVO> querySetmeal(@PathVariable long id){
         SetmealVO setmealVO=setmealService.querySetmeal(id);
         return Result.success(setmealVO);

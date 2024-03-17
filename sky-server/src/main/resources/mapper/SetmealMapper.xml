@@ -18,4 +18,7 @@
         </where>
         order by s.create_time desc
     </select>
+    <select id="queryAll" resultType="com.sky.entity.Setmeal">
+        select * from setmeal where id=#{id}
+    </select>
 </mapper>

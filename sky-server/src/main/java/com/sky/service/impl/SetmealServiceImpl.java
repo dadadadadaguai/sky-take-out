@@ -15,6 +15,7 @@ import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -73,7 +74,11 @@ public class SetmealServiceImpl implements SetmealService {
      */
     @Override
     public SetmealVO querySetmeal(long id) {
-
-        return null;
+        Setmeal setmeal=setmealMapper.queryAll(id);
+        List<SetmealDish> setmealDishes = setMealDishMapper.getSetMealIdByDishId(id);
+        SetmealVO setmealVO = new SetmealVO();
+        BeanUtils.copyProperties(setmeal,setmealVO);
+        setmealVO.setSetmealDishes(setmealDishes);
+        return setmealVO;
     }
 }

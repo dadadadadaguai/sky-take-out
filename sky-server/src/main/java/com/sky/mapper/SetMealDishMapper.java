@@ -28,4 +28,9 @@ public interface SetMealDishMapper {
      */
     void insertBatch(List<SetmealDish> setmealDishes);
 
+    /**
+     * 根据套餐ID查询信息
+     * @param setmeald
+     */
+    List<SetmealDish> getSetMealIdByDishId(long setmeald);
 }

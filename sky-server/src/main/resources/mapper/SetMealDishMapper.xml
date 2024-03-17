@@ -48,5 +48,9 @@
             #{dishId}
         </foreach>
     </select>
+    <select id="getSetMealIdByDishId" resultType="com.sky.entity.SetmealDish">
+        select * from setmeal_dish where setmeal_id=#{setmealId}
+    </select>
+
 
 </mapper>
