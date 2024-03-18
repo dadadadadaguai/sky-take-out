@@ -7,6 +7,8 @@ import com.sky.enumeration.OperationType;
 import com.sky.result.PageResult;
 import com.sky.vo.SetmealVO;
 
+import java.util.List;
+
 public interface SetmealService {
     void addSetmeal(SetmealDTO setmealDTO);
 
@@ -30,4 +32,10 @@ public interface SetmealService {
      */
     @AutoFill(OperationType.UPDATE)
     void updateSetmeal(SetmealDTO setmealDTO);
+
+    /**
+     * 批量删除套餐
+     * @param ids
+     */
+    void deleteSetmeal(List<Long> ids);
 }
