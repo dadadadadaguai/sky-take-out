@@ -60,34 +60,51 @@ public class SetmealController {
     @GetMapping("/{id}")
     @ApiOperation("根据id查询套餐信息")
     public Result<SetmealVO> querySetmeal(@PathVariable long id) {
-        log.info("根据id查询套餐信息，查询套餐的id为{}",id);
+        log.info("根据id查询套餐信息，查询套餐的id为{}", id);
         SetmealVO setmealVO = setmealService.querySetmeal(id);
         return Result.success(setmealVO);
     }
 
     /**
      * 更新套餐信息
+     *
      * @param setmealDTO
      * @return
      */
     @PutMapping
     @ApiOperation("修改套餐")
     public Result updateSetmeal(@RequestBody SetmealDTO setmealDTO) {
-        log.info("修改套餐，setmealDTO:{}",setmealDTO);
+        log.info("修改套餐，setmealDTO:{}", setmealDTO);
         setmealService.updateSetmeal(setmealDTO);
         return Result.success();
     }
 
     /**
      * 批量删除
+     *
      * @param ids
      * @return
      */
     @DeleteMapping
     @ApiOperation("批量删除")
-    public Result deleteSetmeal(@RequestParam List<Long> ids){
-        log.info("批量删除:{}",ids);
+    public Result deleteSetmeal(@RequestParam List<Long> ids) {
+        log.info("批量删除:{}", ids);
         setmealService.deleteSetmeal(ids);
+        return Result.success();
+    }
+
+    /**
+     * 禁用或者启用套餐
+     *
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("禁用或启用套餐")
+    public Result openOrForbid(@PathVariable Integer status, Long id) {
+        log.info("禁用或启用套餐，status:{},id:{}",status,id);
+        setmealService.openOrForbid(status,id);
         return Result.success();
     }
 }

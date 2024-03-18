@@ -38,4 +38,11 @@ public interface SetmealService {
      * @param ids
      */
     void deleteSetmeal(List<Long> ids);
+
+    /**
+     * 禁用或者启用
+     * @param status
+     * @param id
+     */
+    void openOrForbid(Integer status, Long id);
 }
