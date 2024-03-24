@@ -124,12 +124,13 @@ public class DIshServiceImpl implements DishService {
         //考虑删除口味再添加口味
         dishFlavorMapper.deleteByDishId(dishDTO.getId());
         List<DishFlavor> flavors = dishDTO.getFlavors();
-        if (flavors != null || flavors.size() != 0) {
+        if (flavors != null && flavors.size() > 0) {
             for (DishFlavor flavor : flavors) {
                 flavor.setDishId(dishDTO.getId());
             }
             dishFlavorMapper.insertBatch(flavors);
         }
+
     }
 
     /**
