@@ -40,7 +40,6 @@ public class CategoryServiceImpl implements CategoryService {
      * @param status
      * @param id
      */
-    // TODO 当禁用分类时，菜品和套餐也被禁用
     @Override
     public void StartOrForbid(Integer status, Long id) {
         Category category = Category.builder()
