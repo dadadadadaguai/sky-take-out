@@ -1,16 +1,16 @@
 package com.sky.controller.user;
 
 import com.sky.dto.ShoppingCartDTO;
+import com.sky.entity.ShoppingCart;
 import com.sky.result.Result;
 import com.sky.service.ShoppingCartService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "购物车")
 public class ShoppingCartController {
     @Autowired
-    private ShoppingCartService shoppingCartServicel;
+    private ShoppingCartService shoppingCartService;
 
     /**
      * 添加购物车
@@ -30,7 +30,29 @@ public class ShoppingCartController {
     @ApiOperation("添加购物车")
     public Result addShoppingCart(@RequestBody ShoppingCartDTO shoppingCartDTO) {
         log.info("添加购物车:{}", shoppingCartDTO);
-        shoppingCartServicel.add(shoppingCartDTO);
+        shoppingCartService.add(shoppingCartDTO);
+        return Result.success();
+    }
+
+    /**
+     * 展示购物车
+     * @return
+     */
+    @GetMapping("/list")
+    @ApiOperation("展示购物车")
+    public Result<List<ShoppingCart>> showShoppingCart(){
+        List<ShoppingCart> list =shoppingCartService.showShoppingCart();
+        return Result.success(list);
+    }
+
+    /**
+     * 清空购物车
+     * @return
+     */
+    @DeleteMapping("/clean")
+    @ApiOperation("清空购物车")
+    public Result cleanShoppingCart(){
+        shoppingCartService.cleanShoppingCart();
         return Result.success();
     }
 }
