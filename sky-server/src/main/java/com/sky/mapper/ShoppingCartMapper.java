@@ -12,6 +12,7 @@ import java.util.List;
 public interface ShoppingCartMapper {
     /**
      * 查询购物车
+     *
      * @param shoppingCart
      * @return
      */
@@ -20,6 +21,7 @@ public interface ShoppingCartMapper {
 
     /**
      * 根据Id修改商品数量
+     *
      * @param shoppingCart
      */
 
@@ -28,6 +30,7 @@ public interface ShoppingCartMapper {
 
     /**
      * 插入购物车数据
+     *
      * @param shoppingCart
      */
     @Insert("insert into shopping_cart(name, image, user_id, dish_id, setmeal_id, dish_flavor, amount, create_time) " +
@@ -36,6 +39,7 @@ public interface ShoppingCartMapper {
 
     /**
      * 清空购物车
+     *
      * @param userId
      */
     @Delete("delete from shopping_cart where user_id=#{userId}")
@@ -43,6 +47,7 @@ public interface ShoppingCartMapper {
 
     /**
      * 删除菜品
+     *
      * @param shoppingCart
      */
     @Delete("delete from shopping_cart where user_id=#{userId} and dish_id=#{dishId}")
@@ -50,6 +55,7 @@ public interface ShoppingCartMapper {
 
     /**
      * 删除套餐
+     *
      * @param shoppingCart
      */
     @Delete("delete from shopping_cart where user_id=#{userId} and setmeal_id=#{setmealId}")

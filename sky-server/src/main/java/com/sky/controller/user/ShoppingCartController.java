@@ -36,29 +36,32 @@ public class ShoppingCartController {
 
     /**
      * 展示购物车
+     *
      * @return
      */
     @GetMapping("/list")
     @ApiOperation("展示购物车")
-    public Result<List<ShoppingCart>> showShoppingCart(){
-        List<ShoppingCart> list =shoppingCartService.showShoppingCart();
+    public Result<List<ShoppingCart>> showShoppingCart() {
+        List<ShoppingCart> list = shoppingCartService.showShoppingCart();
         return Result.success(list);
     }
 
     /**
      * 清空购物车
+     *
      * @return
      */
     @DeleteMapping("/clean")
     @ApiOperation("清空购物车")
-    public Result cleanShoppingCart(){
+    public Result cleanShoppingCart() {
         shoppingCartService.cleanShoppingCart();
         return Result.success();
     }
+
     @PostMapping("/sub")
     @ApiOperation("删除购物车商品")
-    public Result deleteShoppingCart(@RequestBody ShoppingCartDTO shoppingCartDTO){
+    public Result deleteShoppingCart(@RequestBody ShoppingCartDTO shoppingCartDTO) {
         shoppingCartService.deleteShoppingCart(shoppingCartDTO);
-        return  Result.success();
+        return Result.success();
     }
 }

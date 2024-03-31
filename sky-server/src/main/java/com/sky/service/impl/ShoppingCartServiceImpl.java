@@ -82,12 +82,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public void deleteShoppingCart(ShoppingCartDTO shoppingCartDTO) {
         ShoppingCart shoppingCart = new ShoppingCart();
-        BeanUtils.copyProperties(shoppingCartDTO,shoppingCart);
+        BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
         Long userId = BaseContext.getCurrentId();
         shoppingCart.setUserId(userId);
-        if (shoppingCart.getDishId()!=null){
+        if (shoppingCart.getDishId() != null) {
             shoppingCartMapper.deleteDish(shoppingCart);
-        }else {
+        } else {
             shoppingCartMapper.deleteSetmealId(shoppingCart);
         }
 
