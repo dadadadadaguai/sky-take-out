@@ -17,7 +17,7 @@ public class OrderSubmitVO implements Serializable {
     //订单id
     private Long id;
     //订单号
-    private String orderNudmber;
+    private String orderNumber;
     //订单金额
     private BigDecimal orderAmount;
     //下单时间
