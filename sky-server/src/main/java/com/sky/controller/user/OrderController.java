@@ -1,5 +1,6 @@
 package com.sky.controller.user;
 
+import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.result.PageResult;
@@ -66,11 +67,22 @@ public class OrderController {
         return Result.success(result);
     }
 
+    /**
+     * 查询订单详情
+     * @param id
+     * @return
+     */
     @GetMapping("/orderDetail/{id}")
     @ApiOperation("查询订单详情")
     public Result queryOrder(@PathVariable Integer id) {
         log.info("查询订单:{}的详情信息", id);
         OrderVO orderVO = orderService.queryOrder(id);
         return Result.success(orderVO);
+    }
+    @PutMapping("/cancel/{id}")
+    public Result cancelOrder(@PathVariable Long id){
+        log.info("订单取消,取消的id:{}",id);
+        orderService.cancelOrder(id);
+        return  Result.success();
     }
 }

@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
@@ -249,4 +250,17 @@ public class OrderServiceImpl implements OrderService {
         orderVO.setOrderDetailList(orderDetailList);
         return orderVO;
     }
+
+    /**
+     * 取消订单
+     * @param id
+     */
+    @Override
+    public void cancelOrder(long id) {
+        Orders orders = new Orders();
+        orders.setStatus(Orders.CANCELLED);
+        orders.setId(id);
+        orderMapper.update(orders);
+    }
+
 }
