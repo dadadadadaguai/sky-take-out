@@ -2,17 +2,22 @@ package com.sky.controller.user;
 
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
+import com.sky.vo.DishVO;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+import javax.websocket.server.PathParam;
+
+@RestController("userOrderController")
 @Slf4j
 @RequestMapping("/user/order")
 @Api(tags = "订单关联功能")
@@ -23,11 +28,12 @@ public class OrderController {
 
     @PostMapping("/submit")
     @ApiOperation("提交订单")
-    public Result<OrderSubmitVO> submitOrder(@RequestBody OrdersSubmitDTO ordersSubmitDTO){
-        log.info("用户下单:{}",ordersSubmitDTO);
-        OrderSubmitVO orderSubmitVO=orderService.submitOrder(ordersSubmitDTO);
+    public Result<OrderSubmitVO> submitOrder(@RequestBody OrdersSubmitDTO ordersSubmitDTO) {
+        log.info("用户下单:{}", ordersSubmitDTO);
+        OrderSubmitVO orderSubmitVO = orderService.submitOrder(ordersSubmitDTO);
         return Result.success(orderSubmitVO);
     }
+
     /**
      * 订单支付
      *
@@ -42,5 +48,29 @@ public class OrderController {
         OrderPaymentVO orderPaymentVO = orderService.payment(ordersPaymentDTO);
         log.info("生成预支付交易单：{}", orderPaymentVO);
         return Result.success(orderPaymentVO);
+    }
+
+    /**
+     * 历史订单查询
+     *
+     * @param page
+     * @param pageSize
+     * @param status
+     * @return
+     */
+    @GetMapping("/historyOrders")
+    @ApiOperation("用户端历史订单查询")
+    public Result<PageResult> page(int page, int pageSize, Integer status) {
+        log.info("历史订单查询,page:{},pageSize:{},status:{}", page, pageSize, status);
+        PageResult result = orderService.page(page, pageSize, status);
+        return Result.success(result);
+    }
+
+    @GetMapping("/orderDetail/{id}")
+    @ApiOperation("查询订单详情")
+    public Result queryOrder(@PathVariable Integer id) {
+        log.info("查询订单:{}的详情信息", id);
+        OrderVO orderVO = orderService.queryOrder(id);
+        return Result.success(orderVO);
     }
 }
