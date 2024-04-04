@@ -1,9 +1,6 @@
 package com.sky.service;
 
-import com.sky.dto.OrdersCancelDTO;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.result.PageResult;
 import com.sky.vo.*;
 import lombok.extern.slf4j.Slf4j;
@@ -79,4 +76,9 @@ public interface OrderService {
      */
     OrderStatisticsVO statistics();
 
+    /**
+     * 管理端接单
+     * @param ordersConfirmDTO
+     */
+    void confirmOrder(OrdersConfirmDTO ordersConfirmDTO);
 }

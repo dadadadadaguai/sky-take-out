@@ -1,5 +1,7 @@
 package com.sky.controller.admin;
 
+import com.sky.dto.OrdersCancelDTO;
+import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
@@ -10,10 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController()
 @Slf4j
@@ -59,6 +58,25 @@ public class OrderController {
                 log.info("查询订单详情,查询商品id:{}",id);
                 OrderVO orderVO=orderService.queryOrder(id);
                 return Result.success(orderVO);
+        }
+
+        /**
+         * 管理端取消订单
+         * @param ordersCancelDTO
+         * @return
+         */
+        @PutMapping("/cancel")
+        @ApiOperation("管理端订单取消")
+        public Result orderCancel(@RequestBody OrdersCancelDTO ordersCancelDTO){
+                log.info("订单取消,取消订单的id:{},取消原因为:{}",ordersCancelDTO.getId(),ordersCancelDTO.getCancelReason());
+                return Result.success();
+        }
+        @PutMapping("/confirm")
+        @ApiOperation("管理端接单")
+        public Result confirmOrder(@RequestBody OrdersConfirmDTO ordersConfirmDTO){
+                log.info("接单，接单id:{}",ordersConfirmDTO.getId());
+                orderService.confirmOrder(ordersConfirmDTO);
+                return  Result.success();
         }
 
 }

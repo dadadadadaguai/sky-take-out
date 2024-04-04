@@ -5,10 +5,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersCancelDTO;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
@@ -353,5 +350,21 @@ public class OrderServiceImpl implements OrderService {
         return orderStatisticsVO;
     }
 
-
+    /**
+     * 管理端接单
+     * @param ordersConfirmDTO
+     */
+    @Override
+    public void confirmOrder(OrdersConfirmDTO ordersConfirmDTO) {
+        Orders orders = orderMapper.selectAllById(ordersConfirmDTO.getId());
+        //避免状态异常
+        if (!orders.getStatus().equals(Orders.TO_BE_CONFIRMED)){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        Orders orderDb = Orders.builder()
+                .status(Orders.CONFIRMED)
+                .id(ordersConfirmDTO.getId())
+                .build();
+        orderMapper.update(orderDb);
+    }
 }
