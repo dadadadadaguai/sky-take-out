@@ -24,10 +24,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -196,9 +198,41 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public PageResult pageQueryOrder(OrdersPageQueryDTO ordersPageQueryDTO) {
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
-        //TODO  订单分页查询
+        Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
+        List<OrderVO> orderVoList = getOrderVoList(page);
+        return new PageResult(page.getTotal(), orderVoList);
+    }
 
-        return null;
+    private List<OrderVO> getOrderVoList(Page<Orders> page) {
+        List<OrderVO> orderVOList = new ArrayList<>();
+        List<Orders> ordersList = page.getResult();
+        if (!CollectionUtils.isEmpty(ordersList)) {
+            for (Orders orders : ordersList) {
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(orders, orderVO);
+                //封装orderDishs
+                String orderDishesStr = getOrderDishesStr(orders);
+                orderVO.setOrderDishes(orderDishesStr);
+                orderVOList.add(orderVO);
+            }
+        }
+        return orderVOList;
+    }
+
+    /**
+     * 根据订单id获取菜品信息字符串
+     *
+     * @param orders
+     * @return
+     */
+    private String getOrderDishesStr(Orders orders) {
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
+         //对每条订单进行函数处理，
+        List<String> ordishList = orderDetailList.stream().map(orderDetail -> {
+            String orderDish = orderDetail.getName() + "*" + orderDetail.getNumber() + ";";
+            return orderDish;
+        }).collect(Collectors.toList());
+        return String.join("",ordishList);   //将字符串列表的字符串连接
     }
 
     /**
@@ -254,17 +288,17 @@ public class OrderServiceImpl implements OrderService {
     public void cancelOrder(Long id) {
         Orders orderDb = orderMapper.selectAllById(id);
         //输入性检查：判断有无订单
-        if(orderDb==null){
+        if (orderDb == null) {
             throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
         }
         //当订单状态为：3已接单 4派送中 5已完成 6已取消,则无法取消订单
         Integer orderDbStatus = orderDb.getStatus();
-        if (orderDbStatus >2){
+        if (orderDbStatus > 2) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
         Orders orders = new Orders();
         //当订单状态为待接单时取消订单，则进行退款
-        if (orderDbStatus==2){
+        if (orderDbStatus == 2) {
             orders.setPayMethod(Orders.REFUND);
         }
         orders.setCancelReason("用户取消");
@@ -275,17 +309,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-
     /**
      * 再来一单
      * 将该订单的数据重新加入到购物车
+     *
      * @param id
      */
     @Override
     public void repetOrder(Long id) {
         Orders ordersDb = orderMapper.selectAllById(id);
-        if (ordersDb==null){
-            throw new  OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        if (ordersDb == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
         }
         List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
         Long userId = BaseContext.getCurrentId();
@@ -304,11 +338,12 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 各个状态的订单数量统计
+     *
      * @return
      */
     @Override
     public OrderStatisticsVO statistics() {
-        Integer toBeConfirmed=orderMapper.countStatus(Orders.TO_BE_CONFIRMED);
+        Integer toBeConfirmed = orderMapper.countStatus(Orders.TO_BE_CONFIRMED);
         Integer confirmed = orderMapper.countStatus(Orders.CONFIRMED);
         Integer deliveryInProgress = orderMapper.countStatus(Orders.DELIVERY_IN_PROGRESS);
         OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
@@ -317,4 +352,6 @@ public class OrderServiceImpl implements OrderService {
         orderStatisticsVO.setDeliveryInProgress(deliveryInProgress);
         return orderStatisticsVO;
     }
+
+
 }
