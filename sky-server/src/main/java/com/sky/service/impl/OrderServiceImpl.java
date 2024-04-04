@@ -367,4 +367,26 @@ public class OrderServiceImpl implements OrderService {
                 .build();
         orderMapper.update(orderDb);
     }
+
+    /**
+     * 管理端拒单
+     * @param ordersRejectionDTO
+     */
+    @Override
+    public void rejectOrder(OrdersRejectionDTO ordersRejectionDTO) {
+        Orders orders = orderMapper.selectAllById(ordersRejectionDTO.getId());
+        //避免状态异常
+        if (orders==null || !orders.getStatus().equals(Orders.TO_BE_CONFIRMED) ){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        //拒单后需要进行退款
+        Orders ordersDb = Orders.builder()
+                .status(Orders.CANCELLED)
+                .cancelReason(ordersRejectionDTO.getRejectionReason())
+                .cancelTime(LocalDateTime.now())
+                .payStatus(Orders.REFUND)
+                .id(ordersRejectionDTO.getId())
+                .build();
+        orderMapper.update(ordersDb);
+    }
 }
