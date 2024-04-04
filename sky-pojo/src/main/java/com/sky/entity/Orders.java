@@ -37,6 +37,12 @@ public class Orders implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 配送状态  1已送出 0 未送出
+     */
+    public static final Integer LOCAL_TIME_DELIVERY=1;
+    public static final Integer FUTURE_DELIVERY=0;
+
     private Long id;
 
     //订单号

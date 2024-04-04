@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -224,12 +225,12 @@ public class OrderServiceImpl implements OrderService {
      */
     private String getOrderDishesStr(Orders orders) {
         List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
-         //对每条订单进行函数处理，
+        //对每条订单进行函数处理，
         List<String> ordishList = orderDetailList.stream().map(orderDetail -> {
             String orderDish = orderDetail.getName() + "*" + orderDetail.getNumber() + ";";
             return orderDish;
         }).collect(Collectors.toList());
-        return String.join("",ordishList);   //将字符串列表的字符串连接
+        return String.join("", ordishList);   //将字符串列表的字符串连接
     }
 
     /**
@@ -352,13 +353,14 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 管理端接单
+     *
      * @param ordersConfirmDTO
      */
     @Override
     public void confirmOrder(OrdersConfirmDTO ordersConfirmDTO) {
         Orders orders = orderMapper.selectAllById(ordersConfirmDTO.getId());
         //避免状态异常
-        if (!orders.getStatus().equals(Orders.TO_BE_CONFIRMED)){
+        if (!orders.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
         Orders orderDb = Orders.builder()
@@ -370,13 +372,14 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 管理端拒单
+     *
      * @param ordersRejectionDTO
      */
     @Override
     public void rejectOrder(OrdersRejectionDTO ordersRejectionDTO) {
         Orders orders = orderMapper.selectAllById(ordersRejectionDTO.getId());
         //避免状态异常
-        if (orders==null || !orders.getStatus().equals(Orders.TO_BE_CONFIRMED) ){
+        if (orders == null || !orders.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
         //拒单后需要进行退款
@@ -388,5 +391,63 @@ public class OrderServiceImpl implements OrderService {
                 .id(ordersRejectionDTO.getId())
                 .build();
         orderMapper.update(ordersDb);
+    }
+
+    /**
+     * 管理端取消订单
+     *
+     * @param ordersCancelDTO
+     */
+    @Override
+    public void adminCancelOrder(OrdersCancelDTO ordersCancelDTO) {
+        Orders orderDb = orderMapper.selectAllById(ordersCancelDTO.getId());
+        Integer payStatus = orderDb.getPayStatus();
+        Orders orders = Orders.builder()
+                .status(Orders.CANCELLED)
+                .cancelTime(LocalDateTime.now())
+                .id(ordersCancelDTO.getId())
+                .cancelReason(ordersCancelDTO.getCancelReason())
+                .build();
+        //处理不同的支付状态
+        if (Objects.equals(payStatus, Orders.PAID)) {
+            orders.setPayStatus(Orders.REFUND);//已支付时
+        }
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 派送订单
+     * @param id
+     */
+    @Override
+    public void deliveryOrder(Long id) {
+        Orders orderDb = orderMapper.selectAllById(id);
+        if (!orderDb.getStatus().equals(Orders.CONFIRMED)){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        //修改订单状态
+        Orders orders = Orders.builder()
+                .id(id)
+                .status(Orders.DELIVERY_IN_PROGRESS)
+                .build();
+        orderMapper.update(orders);
+    }
+
+    /**
+     * 完成订单
+     * @param id
+     */
+    @Override
+    public void completeOrder(Long id) {
+        Orders orderDb = orderMapper.selectAllById(id);
+        if (orderDb==null || !orderDb.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        Orders orders = Orders.builder()
+                .status(Orders.COMPLETED)
+                .id(id)
+                .deliveryTime(LocalDateTime.now())
+                .build();
+        orderMapper.update(orders);
     }
 }

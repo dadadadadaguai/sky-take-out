@@ -70,6 +70,7 @@ public class OrderController {
         @ApiOperation("管理端订单取消")
         public Result orderCancel(@RequestBody OrdersCancelDTO ordersCancelDTO){
                 log.info("订单取消,取消订单的id:{},取消原因为:{}",ordersCancelDTO.getId(),ordersCancelDTO.getCancelReason());
+                orderService.adminCancelOrder(ordersCancelDTO);
                 return Result.success();
         }
 
@@ -95,6 +96,25 @@ public class OrderController {
         public Result rejectOrder(@RequestBody OrdersRejectionDTO ordersRejectionDTO){
                 log.info("管理端拒单,拒单的id:{},拒单原因:{}",ordersRejectionDTO.getId(),ordersRejectionDTO.getRejectionReason());
                 orderService.rejectOrder(ordersRejectionDTO);
+                return Result.success();
+        }
+        @PutMapping("/delivery/{id}")
+        @ApiOperation("派送订单")
+        public Result deliveryOrder(@PathVariable Long id){
+                log.info("派送订单，其id为:{}",id);
+                orderService.deliveryOrder(id);
+                return Result.success();
+        }
+
+        /**
+         * 管理端完成订单
+         * @param id
+         * @return
+         */
+        @PutMapping("/complete/{id}")
+        @ApiOperation("完成订单")
+        public Result completeOrder(@PathVariable Long id){
+                orderService.completeOrder(id);
                 return Result.success();
         }
 }
