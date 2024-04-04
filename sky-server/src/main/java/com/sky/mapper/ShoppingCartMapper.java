@@ -60,4 +60,10 @@ public interface ShoppingCartMapper {
      */
     @Delete("delete from shopping_cart where user_id=#{userId} and setmeal_id=#{setmealId}")
     void deleteSetmealId(ShoppingCart shoppingCart);
+
+    /**
+     * 批量插入到购物车
+     * @param shoppingCartList
+     */
+    void insertBatch(List<Object> shoppingCartList);
 }

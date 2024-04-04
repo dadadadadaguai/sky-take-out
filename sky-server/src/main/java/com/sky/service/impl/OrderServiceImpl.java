@@ -32,6 +32,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -242,7 +243,7 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     @Override
-    public OrderVO queryOrder(Integer id) {
+    public OrderVO queryOrder(Long id) {
         Orders orders = orderMapper.selectAllById(id);
         List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
         OrderVO orderVO = new OrderVO();
@@ -251,16 +252,55 @@ public class OrderServiceImpl implements OrderService {
         return orderVO;
     }
 
-    /**
-     * 取消订单
-     * @param id
-     */
     @Override
-    public void cancelOrder(long id) {
+    public void cancelOrder(Long id) {
+        Orders orderDb = orderMapper.selectAllById(id);
+        //输入性检查：判断有无订单
+        if(orderDb==null){
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        //当订单状态为：3已接单 4派送中 5已完成 6已取消,则无法取消订单
+        Integer orderDbStatus = orderDb.getStatus();
+        if (orderDbStatus >2){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
         Orders orders = new Orders();
+        //当订单状态为待接单时取消订单，则进行退款
+        if (orderDbStatus==2){
+            orders.setPayMethod(Orders.REFUND);
+        }
+        orders.setCancelReason("用户取消");
+        orders.setCancelTime(LocalDateTime.now());
         orders.setStatus(Orders.CANCELLED);
         orders.setId(id);
         orderMapper.update(orders);
     }
 
+
+
+    /**
+     * 再来一单
+     * 将该订单的数据重新加入到购物车
+     * @param id
+     */
+    @Override
+    public void repetOrder(Long id) {
+        Orders ordersDb = orderMapper.selectAllById(id);
+        if (ordersDb==null){
+            throw new  OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
+        Long userId = BaseContext.getCurrentId();
+        //将订单的菜品和套餐加入到购物车
+        List<Object> shoppingCartList = orderDetailList.stream().map(orderDetail -> {
+            ShoppingCart shoppingCart = new ShoppingCart();
+            BeanUtils.copyProperties(orderDetail, shoppingCart, "id");
+            shoppingCart.setUserId(userId);
+            shoppingCart.setCreateTime(LocalDateTime.now());
+            return shoppingCart;
+        }).collect(Collectors.toList());
+
+        //批量插入
+        shoppingCartMapper.insertBatch(shoppingCartList);
+    }
 }

@@ -69,20 +69,36 @@ public class OrderController {
 
     /**
      * 查询订单详情
+     *
      * @param id
      * @return
      */
     @GetMapping("/orderDetail/{id}")
     @ApiOperation("查询订单详情")
-    public Result queryOrder(@PathVariable Integer id) {
+    public Result queryOrder(@PathVariable Long id) {
         log.info("查询订单:{}的详情信息", id);
         OrderVO orderVO = orderService.queryOrder(id);
         return Result.success(orderVO);
     }
+
+    /**
+     * 取消订单
+     *
+     * @param id
+     * @return
+     */
     @PutMapping("/cancel/{id}")
-    public Result cancelOrder(@PathVariable Long id){
-        log.info("订单取消,取消的id:{}",id);
+    public Result cancelOrder(@PathVariable Long id) {
+        log.info("订单取消,取消的id:{}", id);
         orderService.cancelOrder(id);
-        return  Result.success();
+        return Result.success();
+    }
+
+    @PostMapping("/repetition/{id}")
+    @ApiOperation("再来一单")
+    public Result repetOrder(@PathVariable Long id) {
+        log.info("再来一单,订单id为:{}", id);
+        orderService.repetOrder(id);
+        return Result.success();
     }
 }

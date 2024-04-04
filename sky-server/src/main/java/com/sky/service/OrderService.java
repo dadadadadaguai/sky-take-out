@@ -62,11 +62,17 @@ public interface OrderService {
      * @param id
      * @return
      */
-    OrderVO queryOrder(Integer id);
+    OrderVO queryOrder(Long id);
 
     /**
      * 取消订单
      * @param id
      */
-    void cancelOrder(long id);
+    void cancelOrder(Long id);
+
+    /**
+     * 再来一单
+     * @param id
+     */
+    void repetOrder(Long id);
 }
