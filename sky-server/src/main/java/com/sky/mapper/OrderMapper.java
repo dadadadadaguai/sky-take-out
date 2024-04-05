@@ -6,8 +6,10 @@ import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.springframework.core.annotation.Order;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Mapper
 public interface OrderMapper {
@@ -73,4 +75,21 @@ public interface OrderMapper {
      */
     @Select("select count(id) from orders where status=#{status} ")
     Integer countStatus(Integer status);
+
+    /**
+     * 超时订单处理
+     * @param status
+     * @param orderTime
+     */
+    @Select("select * from orders where status=#{status} and order_time<#{orderTime}")
+    List<Orders> selectAllByStatusAndOrderTimeLT(Integer status, LocalDateTime orderTime);
+
+    /**
+     * 派送中订单超时未处理
+     * @param deliveryInProgress
+     * @param orderTime
+     * @return
+     */
+    @Select("select * from orders where status=#{status} and order_time<#{orderTime}")
+    List<Orders> getByStatusAndOrderTimeLT(Integer deliveryInProgress, LocalDateTime orderTime);
 }
