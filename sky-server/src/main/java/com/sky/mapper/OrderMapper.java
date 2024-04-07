@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Update;
 import org.springframework.core.annotation.Order;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -100,4 +101,12 @@ public interface OrderMapper {
      * @return
      */
     Double sumByMap(Map map);
+
+    /**
+     * 获取一段时期的订单数
+     * @param map
+     * @return
+     */
+    Integer getOrderNum(HashMap<String, Object> map);
+
 }
