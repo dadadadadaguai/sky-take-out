@@ -3,6 +3,8 @@ package com.sky.controller.admin;
 import com.sky.result.Result;
 import com.sky.service.ReportService;
 import com.sky.vo.TurnoverReportVO;
+import com.sky.vo.UserReportVO;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,7 +20,6 @@ import java.time.LocalDate;
 public class reportController {
     @Autowired
     private ReportService reportService;
-
     /**
      * 营业额统计
      * @param begin
@@ -26,6 +27,7 @@ public class reportController {
      * @return
      */
     @GetMapping("/turnoverStatistics")
+    @ApiOperation("营业额统计")
     public Result<TurnoverReportVO> getTurnoverReport(
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end){
@@ -34,4 +36,19 @@ public class reportController {
         TurnoverReportVO turnoverReport=reportService.getTurnoverReport(begin,end);
         return Result.success(turnoverReport);
     }
+
+    /**
+     * 用户统计
+     * @return
+     */
+    @GetMapping("/userStatistics")
+    @ApiOperation("用户统计")
+    public Result<UserReportVO> getUserReport(
+        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
+        @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end){
+
+        UserReportVO userReport=reportService.getUserReport(begin,end);
+        return Result.success(userReport);
+    }
+
 }
