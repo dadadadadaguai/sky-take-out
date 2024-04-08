@@ -1,10 +1,12 @@
 package com.sky.service.impl;
 
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.OrderReportVO;
+import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import org.apache.commons.lang.StringUtils;
@@ -15,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -123,14 +126,12 @@ public class ReportServiceImpl implements ReportService {
             beginTime = beginTime.plusDays(1);
             dateList.add(beginTime);
         }
-
-        //每天订单数 select count(id) from order where orderTime<? and orderTime>?
-        List<Integer> localOrderNum = new ArrayList<>();
+/*      //每天订单数 select count(id) from order where orderTime<? and orderTime>?
         //每天有效订单数 select count(id) from order where order
-        List<Integer> userfulLocalOrderNum = new ArrayList<>();
         //有效订单总数 select count(id) from order where orderTime<?  and status==已完成
-        //订单总数 select count(id) from order where orderTime<?
-
+        //订单总数 select count(id) from order where orderTime<?*/
+        List<Integer> localOrderNum = new ArrayList<>();
+        List<Integer> userfulLocalOrderNum = new ArrayList<>();
         for (LocalDate localDate : dateList) {
             //获取当天的时间范围0-24
             LocalDateTime beginTimeLocal = LocalDateTime.of(localDate, LocalTime.MIN);
@@ -146,20 +147,15 @@ public class ReportServiceImpl implements ReportService {
         }
         Integer totalOrderCount = localOrderNum.stream().reduce(Integer::sum).get();   //订单总数
         Integer totalUserfulOrderCount = userfulLocalOrderNum.stream().reduce(Integer::sum).get(); //有效订单总数
-
-
         //订单完成率:有效订单/订单总数
         // doubleValue() 将Integer强转为Double
         Double orderCompletionRate = 0.0;
         if (totalOrderCount != 0) {
             orderCompletionRate = totalUserfulOrderCount.doubleValue() / totalOrderCount;
         }
-
-
         String stringDateList = StringUtils.join(dateList, ",");
         String stringLocalOrderNum = StringUtils.join(localOrderNum, ",");
         String stringUserfulLocalOrderNum = StringUtils.join(userfulLocalOrderNum, ",");
-
         return OrderReportVO.builder()
                 .dateList(stringDateList)
                 .orderCompletionRate(orderCompletionRate)
@@ -167,6 +163,35 @@ public class ReportServiceImpl implements ReportService {
                 .totalOrderCount(totalOrderCount)
                 .validOrderCountList(stringUserfulLocalOrderNum)
                 .validOrderCount(totalUserfulOrderCount)
+                .build();
+    }
+
+    /**
+     * 销量排名top10接口
+     * @param begin
+     * @param end
+     * @return
+     */
+    @Override
+    public SalesTop10ReportVO getSalesTop10(LocalDate begin, LocalDate end) {
+        //sql select od.name,sum(od.number) from order o,orderDetail od where o.id=od.order_id and o.status=6 and ordertime<? and ordertime>?
+        // group by od.name order by desc limit 0,1
+        //商品名称列表
+        //销量列表
+
+        LocalDateTime beginTime=LocalDateTime.of(begin,LocalTime.MIN);
+        LocalDateTime endTime=LocalDateTime.of(end,LocalTime.MAX);
+        List<GoodsSalesDTO> goodsSalesList=orderMapper.getSalesTop();
+        //使用steam流获取nameList列表
+
+        List<String> nameList = goodsSalesList.stream().map(GoodsSalesDTO::getName).collect(Collectors.toList());
+        String stringNameList = StringUtils.join(nameList, ",");
+        List<Integer> numberList = goodsSalesList.stream().map(GoodsSalesDTO::getNumber).collect(Collectors.toList());
+        String stringNumberList = StringUtils.join(numberList, ",");
+
+        return SalesTop10ReportVO.builder()
+                .nameList(stringNameList)
+                .numberList(stringNumberList)
                 .build();
     }
 }
