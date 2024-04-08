@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface DishMapper {
@@ -76,4 +77,10 @@ public interface DishMapper {
      * @return
      */
     List<Dish> getBySetMealId(Long setMealId);
+        /**
+         * 根据条件统计菜品数量
+         * @param map
+         * @return
+         */
+        Integer countByMap(Map map);
 }

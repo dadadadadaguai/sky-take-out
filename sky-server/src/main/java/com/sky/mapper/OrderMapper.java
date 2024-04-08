@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.core.annotation.Order;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -108,12 +109,12 @@ public interface OrderMapper {
      * @param map
      * @return
      */
-    Integer getOrderNum(HashMap<String, Object> map);
+    Integer getOrderNum(Map<String, Object> map);
 
     /**
      * 销量排名top10
      * @return
      */
-    List<GoodsSalesDTO> getSalesTop();
+    List<GoodsSalesDTO> getSalesTop(LocalDateTime beginTime, LocalDateTime endTime);
 
 }

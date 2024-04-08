@@ -136,7 +136,7 @@ public class ReportServiceImpl implements ReportService {
             //获取当天的时间范围0-24
             LocalDateTime beginTimeLocal = LocalDateTime.of(localDate, LocalTime.MIN);
             LocalDateTime endTimeLocal = LocalDateTime.of(localDate, LocalTime.MAX);
-            HashMap<String, Object> map = new HashMap<>();
+            Map<String, Object> map = new HashMap<>();
             map.put("endTime", endTimeLocal);
             map.put("beginTime", beginTimeLocal);
             Integer orderCount = orderMapper.getOrderNum(map);  //订单
@@ -181,7 +181,7 @@ public class ReportServiceImpl implements ReportService {
 
         LocalDateTime beginTime=LocalDateTime.of(begin,LocalTime.MIN);
         LocalDateTime endTime=LocalDateTime.of(end,LocalTime.MAX);
-        List<GoodsSalesDTO> goodsSalesList=orderMapper.getSalesTop();
+        List<GoodsSalesDTO> goodsSalesList=orderMapper.getSalesTop(beginTime,endTime);
         //使用steam流获取nameList列表
 
         List<String> nameList = goodsSalesList.stream().map(GoodsSalesDTO::getName).collect(Collectors.toList());
