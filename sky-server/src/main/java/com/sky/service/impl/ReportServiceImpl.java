@@ -5,14 +5,19 @@ import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
-import com.sky.vo.OrderReportVO;
-import com.sky.vo.SalesTop10ReportVO;
-import com.sky.vo.TurnoverReportVO;
-import com.sky.vo.UserReportVO;
+import com.sky.service.WorkspaceService;
+import com.sky.vo.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,6 +30,8 @@ public class ReportServiceImpl implements ReportService {
     private OrderMapper orderMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private WorkspaceService workspaceService;
 
     @Override
     public TurnoverReportVO getTurnoverReport(LocalDate begin, LocalDate end) {
@@ -168,6 +175,7 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * 销量排名top10接口
+     *
      * @param begin
      * @param end
      * @return
@@ -179,9 +187,9 @@ public class ReportServiceImpl implements ReportService {
         //商品名称列表
         //销量列表
 
-        LocalDateTime beginTime=LocalDateTime.of(begin,LocalTime.MIN);
-        LocalDateTime endTime=LocalDateTime.of(end,LocalTime.MAX);
-        List<GoodsSalesDTO> goodsSalesList=orderMapper.getSalesTop(beginTime,endTime);
+        LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+        List<GoodsSalesDTO> goodsSalesList = orderMapper.getSalesTop(beginTime, endTime);
         //使用steam流获取nameList列表
 
         List<String> nameList = goodsSalesList.stream().map(GoodsSalesDTO::getName).collect(Collectors.toList());
@@ -193,5 +201,56 @@ public class ReportServiceImpl implements ReportService {
                 .nameList(stringNameList)
                 .numberList(stringNumberList)
                 .build();
+    }
+
+    /**
+     * 导出报表 30天
+     *
+     * @param response
+     */
+    @Override
+    public void exportExcel(HttpServletResponse response) {
+        //获取数据
+        LocalDate localDate = LocalDate.now();
+        LocalDate dateBegin = localDate.minusDays(30);  //开始这一天
+        LocalDate dateEnd = localDate.minusDays(1);    //结束
+
+        LocalDateTime beginTime = LocalDateTime.of(dateBegin, LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(dateEnd, LocalTime.MAX);
+        BusinessDataVO businessData = workspaceService.getBusinessData(beginTime, endTime);
+
+        //填充数据到excel模板
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("template/datetemplet.xlsx");
+        try {
+            XSSFWorkbook excel = new XSSFWorkbook(inputStream);
+            //时间段
+            XSSFSheet sheet1 = excel.getSheet("sheet1");
+            sheet1.getRow(1).getCell(1).setCellValue("订单时期为:" + dateBegin + "至" + dateEnd);
+            //概览数据
+            sheet1.getRow(3).getCell(2).setCellValue(businessData.getTurnover());
+            sheet1.getRow(3).getCell(4).setCellValue(businessData.getOrderCompletionRate());
+            sheet1.getRow(3).getCell(6).setCellValue(businessData.getNewUsers());
+            sheet1.getRow(4).getCell(2).setCellValue(businessData.getValidOrderCount());
+            sheet1.getRow(4).getCell(4).setCellValue(businessData.getUnitPrice());
+            //明细数据:每一天的数据
+            for (int i = 0; i < 30; i++) {
+                LocalDate date = dateBegin.plusDays(i);
+                BusinessDataVO detailBusinessData = workspaceService.getBusinessData(LocalDateTime.of(date, LocalTime.MIN), LocalDateTime.of(date, LocalTime.MAX));
+                XSSFRow row = sheet1.getRow(7 + i);
+                row.getCell(1).setCellValue(date.toString());
+                row.getCell(2).setCellValue(detailBusinessData.getTurnover());
+                row.getCell(3).setCellValue(detailBusinessData.getValidOrderCount());
+                row.getCell(4).setCellValue(detailBusinessData.getOrderCompletionRate());
+                row.getCell(5).setCellValue(detailBusinessData.getUnitPrice());
+                row.getCell(6).setCellValue(detailBusinessData.getNewUsers());
+            }
+            ServletOutputStream outputStream = response.getOutputStream();
+            excel.write(outputStream);
+
+            outputStream.close();
+            excel.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
